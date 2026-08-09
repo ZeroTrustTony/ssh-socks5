@@ -55,6 +55,26 @@ Check health status:
 podman inspect --format '{{.State.Health.Status}}' ssh-socks5
 ```
 
+### Multi-arch image (amd64 + arm64)
+
+The `Dockerfile` cross-compiles the Go binary using Buildx's `TARGETARCH`, so a
+single image can be built for both `linux/amd64` and `linux/arm64`.
+
+```bash
+# Build both arches and push a manifest list to a registry:
+make docker-buildx PUSH=1 IMAGE=ghcr.io/you/ssh-socks5:latest
+
+# Or directly with buildx:
+docker buildx build --platform linux/amd64,linux/arm64 \
+  -t ghcr.io/you/ssh-socks5:latest --push .
+```
+
+Buildx cannot load a multi-arch image into the local Docker store; use `PUSH=1`
+to publish, or `make docker-build` for a single-arch local image.
+
+On tag push (`v*.*.*`) the GitHub Actions workflow builds and publishes both
+architectures to GHCR automatically as a single multi-arch tag.
+
 ## Configuration
 
 See `config.example.yaml` for a full example:
@@ -268,6 +288,8 @@ even when the proxy is idle. If you prefer faster health feedback, lower
 make build                   # main client
 make build-udp-relay         # UDP relay (requires Go)
 make build-udp-relay-docker  # UDP relay via Docker/Podman
+make docker-build            # single-arch image for the local machine
+make docker-buildx           # multi-arch image (amd64 + arm64), add PUSH=1 to publish
 ```
 
 ## Logging (INFO)

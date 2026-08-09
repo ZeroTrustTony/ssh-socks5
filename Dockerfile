@@ -1,5 +1,5 @@
-# Build stage
-FROM golang:1.26.5-alpine AS builder
+# Build stage — runs on the native build host and cross-compiles to the target arch.
+FROM --platform=$BUILDPLATFORM golang:1.26.5-alpine AS builder
 
 RUN apk add --no-cache git ca-certificates
 
@@ -9,7 +9,12 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o ssh-socks5 ./cmd/ssh-socks5
+
+# TARGETOS/TARGETARCH are provided automatically by Docker Buildx.
+ARG TARGETOS
+ARG TARGETARCH
+RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH:-amd64} \
+    go build -ldflags="-s -w" -o ssh-socks5 ./cmd/ssh-socks5
 
 # Runtime stage
 FROM alpine:3.23.5
