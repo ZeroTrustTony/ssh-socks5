@@ -1,0 +1,41 @@
+ssh:
+  host: example.com
+  port: 22
+  user: myuser
+  auth:
+    # method: key | password
+    method: key
+    private_key_path: /etc/ssh-socks5/id_ed25519
+    # password: secret   # used when method is password
+  # SSH host key verification. Disabled by default (connection is vulnerable to
+  # man-in-the-middle attacks). Enable it and pin the server's public key to
+  # protect the tunnel, e.g. in a Docker image where known_hosts is not present.
+  host_key:
+    verify: false
+    # Server public key in authorized_keys / known_hosts format (single line,
+    # without the leading hostname). Get it on the server with, e.g.:
+    #   cat /etc/ssh/ssh_host_ed25519_key.pub
+    # or from a client with:
+    #   ssh-keyscan -t ed25519 example.com
+    # key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAA..."
+
+socks5:
+  listen: "0.0.0.0:1080"
+  username: proxyuser
+  password: proxypass
+
+# UDP is optional. When disabled, only TCP SOCKS5 is available.
+udp:
+  enabled: false
+  remote_path: /usr/local/bin/ssh-socks5-udp-relay
+  port: 38473
+  auth_key: change-me-to-a-long-random-secret
+
+# Optional tunnel test at startup (requires curl in PATH).
+startup_test:
+  enabled: false
+  url: http://speedtest.tele2.net/10MB.zip
+
+idle_timeout: 5m
+max_clients: 100
+log_level: info
