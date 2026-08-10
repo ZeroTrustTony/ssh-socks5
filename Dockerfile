@@ -1,5 +1,5 @@
 # Build stage — runs on the native build host and cross-compiles to the target arch.
-FROM --platform=$BUILDPLATFORM golang:1.26.5-alpine AS builder
+FROM --platform=$BUILDPLATFORM golang:1.26-alpine AS builder
 
 RUN apk add --no-cache git ca-certificates
 
