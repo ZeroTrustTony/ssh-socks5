@@ -16,7 +16,7 @@ The service establishes an SSH connection to a remote server **only when a clien
 - UDP relay with shared-key authentication
 - Optional tunnel test at startup (curl)
 - Docker/Podman image with health check and curl
-- Low footprint: ~6–7 MB RAM at runtime
+- Low footprint: ~3–4 MB RAM at runtime
 
 ## Quick start
 
