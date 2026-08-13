@@ -34,7 +34,7 @@ udp:
 # Optional tunnel test at startup (requires curl in PATH).
 startup_test:
   enabled: false
-  url: http://speedtest.tele2.net/10MB.zip
+  url: https://speedtest.tele2.net/10MB.zip
 
 idle_timeout: 5m
 max_clients: 100
