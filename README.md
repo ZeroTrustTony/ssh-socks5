@@ -121,7 +121,7 @@ See `config.example.yaml` for a full example:
 | `udp.port` | UDP relay TCP port on remote `127.0.0.1` (default `38473`) |
 | `udp.auth_key` | Shared UDP relay auth key (when `enabled: true`) |
 | `startup_test.enabled` | Run tunnel test at startup |
-| `startup_test.url` | Test URL (default `[https://speedtest.tele2.net/1MB.zip](https://speedtest.tele2.net/1MB.zip)`) |
+| `startup_test.url` | Test URL (default `https://speedtest.tele2.net/1MB.zip`) |
 | `idle_timeout` | Idle period before SSH is closed |
 | `max_clients` | Concurrent client limit (`0` = unlimited) |
 | `log_level` | `debug`, `info`, or `error` |
