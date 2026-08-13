@@ -18,7 +18,34 @@ The service establishes an SSH connection to a remote server **only when a clien
 - Docker/Podman image with health check and curl
 - Low footprint: ~3–4 MB RAM at runtime
 
-## Quick start
+## Docker Quick Start
+
+The quickest way to get started is with the pre-built multi-arch image (supports `linux/amd64` and `linux/arm64`).
+
+**Pull the image:**
+```bash
+docker pull ghcr.io/zerotrusttony/ssh-socks5:latest
+```
+
+**Prepare your `config.yaml`** – see the [Configuration](#configuration) section for details.
+
+**Run the container:**
+```bash
+docker run -d \
+  --name ssh-socks5 \
+  -v ./config.yaml:/etc/ssh-socks5/config.yaml:ro \
+  -v ./id_ed25519:/etc/ssh-socks5/id_ed25519:ro \
+  -p 1080:1080 \
+  ghcr.io/zerotrusttony/ssh-socks5:latest
+```
+
+> **Notes:**
+> - Mount your SSH private key if using key-based authentication (adjust the path as needed).
+> - The `:ro` flag mounts files as read-only for security.
+> - The container includes a built-in health check and `curl` for startup tests.
+> - By default, the SOCKS5 proxy listens on port `1080` – map it to your desired host port.
+
+## Manual Quick start
 
 ### Build
 
@@ -94,7 +121,7 @@ See `config.example.yaml` for a full example:
 | `udp.port` | UDP relay TCP port on remote `127.0.0.1` (default `38473`) |
 | `udp.auth_key` | Shared UDP relay auth key (when `enabled: true`) |
 | `startup_test.enabled` | Run tunnel test at startup |
-| `startup_test.url` | Test URL (default `https://www.google.com`) |
+| `startup_test.url` | Test URL (default `[https://speedtest.tele2.net/1MB.zip](https://speedtest.tele2.net/1MB.zip)`) |
 | `idle_timeout` | Idle period before SSH is closed |
 | `max_clients` | Concurrent client limit (`0` = unlimited) |
 | `log_level` | `debug`, `info`, or `error` |
@@ -121,15 +148,13 @@ udp:
 ```yaml
 startup_test:
   enabled: true
-  url: https://www.google.com
+  url: https://speedtest.tele2.net/1MB.zip
 ```
 
 On startup the service establishes the SSH tunnel, runs `curl` through SOCKS5, and logs the result:
 
 ```
-INFO  startup test: OK (HTTP 200, 15.2 KB transferred, 42.1 KB/s, 0.36 s, https://www.google.com)
-INFO  startup test: FAILED (HTTP 403, 512 B transferred, 1.2 KB/s, 0.41 s, https://www.google.com)
-INFO  startup test: FAILED (tunnel: ...)
+INFO  startup test: OK (HTTP 200, 1.0 MB transferred, 316.7 KB/s, 3.23 s, https://speedtest.tele2.net/1MB.zip)
 ```
 
 Requires `curl` in PATH (included in the Docker image).
@@ -274,7 +299,7 @@ even when the proxy is idle. If you prefer faster health feedback, lower
 
 ## Resource usage
 
-- **Memory:** the running container uses about **6–7 MB RAM**.
+- **Memory:** the running container uses about **3–4 MB RAM**.
 - **Disk I/O:** the service does not write to disk during normal operation; it
   only logs to stdout/stderr (captured by the container runtime). The main
   source of periodic block writes is the Docker health check, which is why its
